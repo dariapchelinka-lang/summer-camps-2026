@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Заявка отправлена · Летние лагеря 2026{% endblock %}
+{% block content %}
+  <div class="success-content">
+    <div class="success-icon" aria-hidden="true">✓</div>
+    <h2>Заявка отправлена</h2>
+    <p>Спасибо! Ваши данные сохранены. Если потребуется уточнение, с вами свяжутся по указанным контактам.</p>
+    <a class="button submit-button" href="{{ url_for('index') }}">Вернуться к форме</a>
+  </div>
+{% endblock %}

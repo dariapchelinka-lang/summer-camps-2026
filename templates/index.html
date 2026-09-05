@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Летние лагеря 2026{% endblock %}
+{% block content %}
+  <div class="progress" aria-label="Этап заполнения формы">
+    <div class="progress-step is-active" data-progress="0">
+      <span>1</span>
+      <strong>Основная информация</strong>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step" data-progress="1">
+      <span>2</span>
+      <strong>Достижения</strong>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alerts" aria-live="polite">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <form id="survey-form" action="{{ url_for('submit') }}" method="post" novalidate>
+    <section class="survey-step is-active" data-step="0">
+      <div class="intro-copy">
+        <div class="notice">
+          <p><b>❗ Важно: форма только для Химического факультета</b></p>
+          <p>Сбор заявок в основные списки завершается <b>22 апреля в 23:59</b></p>
+        </div>
+
+        <p><b>Напоминаем основные правила предоставления бесплатных путевок:</b></p>
+        <p>📌 Каждый обучающийся на бюджетной основе (очно) за весь период обучения в МГУ, включая обучение в бакалавриате, магистратуре, специалитете, аспирантуре, имеет право на бесплатную путевку не более трех раз, из них не более 1 раза в пансионат «Буревестник».</p>
+
+        <p><b>В этом году смены пройдут в следующие даты:</b></p>
+        <ul class="dates-list">
+          <li>🌴 Буревестник 1 смена 3 июля – 13 июля</li>
+          <li>🌴 Буревестник 2 смена 15 июля – 25 июля</li>
+          <li>🌴 Буревестник 3 смена 27 июля – 6 августа</li>
+          <li>🌴 Буревестник 4 смена 8 августа – 18 августа</li>
+          <li>🌴 Буревестник 5 смена 20 августа – 30 августа</li>
+          <li>🌺 Красновидово 1 смена 3 июля – 14 июля</li>
+          <li>🌺 Красновидово 2 смена 19 августа – 30 августа</li>
+        </ul>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="name"><span class="required">*</span> Ваши ФИО</label>
+          <input id="name" name="name" type="text" value="{{ form.get('name', '') if form else '' }}" autocomplete="name" maxlength="150" required>
+        </div>
+
+        <fieldset class="field choice-field">
+          <legend><span class="required">*</span> Вы обучаетесь на бюджетной основе?</legend>
+          <label class="choice">
+            <input type="radio" name="budget" value="Да" {% if form and form.get('budget') == 'Да' %}checked{% endif %} required>
+            <span>Да</span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="budget" value="Нет" {% if form and form.get('budget') == 'Нет' %}checked{% endif %}>
+            <span>Нет</span>
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="course"><span class="required">*</span> Номер вашего курса</label>
+          <select id="course" name="course" required>
+            <option value="">–</option>
+            {% for option in ['1', '2', '3', '4', '5', '6', 'Аспирантура'] %}
+              <option value="{{ option }}" {% if form and form.get('course') == option %}selected{% endif %}>{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="student_ticket"><span class="required">*</span> Номер студенческого/аспирантского билета</label>
+          <input id="student_ticket" name="student_ticket" type="text" inputmode="numeric" value="{{ form.get('student_ticket', '') if form else '' }}" maxlength="13" required>
+          <p class="help-text">Номер состоит из 13 цифр. Если в вашем студенческом указано 7 цифр (или меньше), нужно дописать в начале нужное количество 0.</p>
+        </div>
+
+        <div class="field">
+          <label for="union_ticket"><span class="required">*</span> Номер профсоюзного билета</label>
+          <input id="union_ticket" name="union_ticket" type="text" value="{{ form.get('union_ticket', '') if form else '' }}" maxlength="80" required>
+          <p class="help-text">Номер карты Zachet! можно узнать в личном кабинете <a href="https://lk.msuprof.com/" target="_blank" rel="noreferrer">lk.msuprof.com</a> или в сообщениях группы Профкома студентов Химфака <a href="https://vk.cc/CRi8rp" target="_blank" rel="noreferrer">ВКонтакте</a>.</p>
+        </div>
+
+        <div class="field">
+          <label for="vk_link"><span class="required">*</span> Ссылка на страницу ВКонтакте</label>
+          <input id="vk_link" name="vk_link" type="url" placeholder="https://vk.com/..." value="{{ form.get('vk_link', '') if form else '' }}" required>
+          <p class="help-text">В формате <b>https://vk.com/...</b></p>
+        </div>
+
+        <div class="field">
+          <label for="phone"><span class="required">*</span> Ваш номер телефона</label>
+          <input id="phone" name="phone" type="tel" inputmode="numeric" placeholder="8XXXXXXXXXX" value="{{ form.get('phone', '') if form else '' }}" maxlength="11" required>
+          <p class="help-text">В формате 8XXXXXXXXXX</p>
+        </div>
+
+        <div class="field">
+          <label for="email"><span class="required">*</span> Адрес вашей электронной почты</label>
+          <input id="email" name="email" type="email" value="{{ form.get('email', '') if form else '' }}" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label for="telegram_link"><span class="required">*</span> Ссылка на аккаунт в Телеграм</label>
+          <input id="telegram_link" name="telegram_link" type="url" placeholder="https://t.me/..." value="{{ form.get('telegram_link', '') if form else '' }}" required>
+          <p class="help-text">В формате <b>https://t.me/...</b></p>
+        </div>
+      </div>
+
+      <button class="button next-button" type="button" data-next>Далее <span>→</span></button>
+    </section>
+
+    <section class="survey-step" data-step="1" hidden>
+      <div class="section-heading">
+        <h2>Расскажите о своих достижениях на Химическом факультете!</h2>
+        <p>Далее будут вопросы о ваших достижениях на Химическом факультете. Разделите ваши достижения в соответствии со следующими разделами (указаны не в порядке приоритета):</p>
+        <ul>
+          <li>научная деятельность</li>
+          <li>учебная деятельность</li>
+          <li>общественная деятельность</li>
+          <li>спортивная деятельность</li>
+          <li>культурно-массовая деятельность</li>
+        </ul>
+        <p>Просьба расписывать ваши достижения в вопросах, соответствующих разделу. Документы, подтверждающие ваши достижения, необходимо приложить одной ссылкой на диск.</p>
+      </div>
+
+      <div class="fields">
+        {% set achievements = [
+          ('science', 'Ваши научные достижения', 'Напишите ваши научные достижения, например, опубликованные статьи с указанием рейтинга журнала и ссылкой, например, на ИСТИНУ, тезисы, участие в конференциях.'),
+          ('education', 'Ваши учебные достижения', 'Напишите ваши учебные достижения, например, систематическая отличная учеба, пост старосты группы/курса.'),
+          ('social', 'Ваши общественные достижения', 'Напишите ваши общественные достижения, например, должность организатора/волонтера на университетском, межфакультетском, факультетском мероприятиях.'),
+          ('sport', 'Ваши спортивные достижения', 'Напишите ваши спортивные достижения, например, победа/призерство (с указанием места) во всероссийских, межвузовских, университетских соревнованиях.'),
+          ('culture', 'Ваши культурно-массовые достижения', 'Напишите ваши культурно-массовые достижения, например, должность режиссера, актера на университетском, межфакультетском, факультетском мероприятиях.')
+        ] %}
+        {% for field_name, label, help in achievements %}
+          <div class="field">
+            <label for="{{ field_name }}"><span class="required">*</span> {{ label }}</label>
+            <p class="help-text">{{ help }}</p>
+            <textarea id="{{ field_name }}" name="{{ field_name }}" rows="5" maxlength="4000" required>{{ form.get(field_name, '') if form else '' }}</textarea>
+          </div>
+        {% endfor %}
+
+        <div class="field">
+          <label for="achievements_link"><span class="required">*</span> Ссылка на диск с подтверждениями ваших достижений</label>
+          <input id="achievements_link" name="achievements_link" type="url" placeholder="https://drive.google.com/..." value="{{ form.get('achievements_link', '') if form else '' }}" required>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="button back-button" type="button" data-back>← Назад</button>
+        <button class="button submit-button" type="submit">Отправить заявку <span>→</span></button>
+      </div>
+      <p class="privacy-note">Нажимая кнопку, вы соглашаетесь на обработку предоставленных данных.</p>
+    </section>
+
+    <div class="honeypot" aria-hidden="true">
+      <label for="website">Ваш сайт</label>
+      <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+    </div>
+  </form>
+
+  <script>
+    (() => {
+      const form = document.getElementById("survey-form");
+      const steps = [...document.querySelectorAll(".survey-step")];
+      const progress = [...document.querySelectorAll(".progress-step")];
+      let current = 0;
+
+      function setStep(index) {
+        current = index;
+        steps.forEach((step, stepIndex) => {
+          const active = stepIndex === index;
+          step.hidden = !active;
+          step.classList.toggle("is-active", active);
+        });
+        progress.forEach((item, itemIndex) => {
+          item.classList.toggle("is-active", itemIndex === index);
+          item.classList.toggle("is-complete", itemIndex < index);
+        });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      document.querySelector("[data-next]").addEventListener("click", () => {
+        const currentControls = steps[current].querySelectorAll("input:not([type=radio]), input[type=radio], select, textarea");
+        if ([...currentControls].every((control) => control.checkValidity())) {
+          setStep(1);
+        } else {
+          form.reportValidity();
+        }
+      });
+      document.querySelector("[data-back]").addEventListener("click", () => setStep(0));
+      form.addEventListener("submit", (event) => {
+        if (!steps[1].querySelector("textarea:invalid, input:invalid")) return;
+        event.preventDefault();
+        form.reportValidity();
+      });
+      setStep(0);
+    })();
+  </script>
+{% endblock %}

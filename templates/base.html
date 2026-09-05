@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Заявка на летние лагеря 2026 для студентов Химического факультета">
+    <title>{% block title %}Летние лагеря 2026{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>Летние лагеря 2026</h1>
+      {% set admin_token = request.args.get('admin_access', '') %}
+      <a class="admin-entry" href="{{ url_for('admin_dashboard', admin_access=admin_token) if session.get('admin_authenticated') or admin_token else url_for('admin_login') }}">
+        {% if session.get('admin_authenticated') or admin_token %}Результаты опроса{% else %}Вход для администратора{% endif %}
+      </a>
+    </header>
+
+    <main class="survey-card {% block card_class %}{% endblock %}">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="page-footer">Химический факультет · форма заявки</footer>
+  </body>
+</html>

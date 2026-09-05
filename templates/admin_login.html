@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Вход администратора · Летние лагеря 2026{% endblock %}
+{% block card_class %}admin-login-card{% endblock %}
+{% block content %}
+  <div class="admin-login-content">
+    <div class="admin-lock" aria-hidden="true">⌕</div>
+    <p class="admin-kicker">ЗАКРЫТЫЙ РАЗДЕЛ</p>
+    <h2>Вход для администратора</h2>
+    <p class="admin-description">Здесь можно посмотреть ответы участников, не открывая Google Sheets.</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alerts" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('admin_login') }}" class="admin-login-form">
+      <input type="text" name="username" value="admin" autocomplete="username" class="visually-hidden" tabindex="-1" aria-hidden="true">
+      <div class="field">
+        <label for="password">Пароль администратора</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required autofocus>
+      </div>
+      <button class="button submit-button" type="submit">Войти <span>→</span></button>
+    </form>
+    <a class="back-link" href="{{ url_for('index') }}">← Вернуться к опросу</a>
+  </div>
+{% endblock %}

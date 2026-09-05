@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Результаты опроса · Летние лагеря 2026{% endblock %}
+{% block card_class %}admin-dashboard-card{% endblock %}
+{% block content %}
+  <div class="admin-toolbar">
+    <div>
+      <p class="admin-kicker">ПАНЕЛЬ АДМИНИСТРАТОРА</p>
+      <h2>Результаты опроса</h2>
+      <p class="admin-description">Откройте папку участника, чтобы посмотреть заполненную анкету.</p>
+    </div>
+    <form method="post" action="{{ url_for('admin_logout', admin_access=request.args.get('admin_access', '')) }}">
+      <button class="logout-button" type="submit">Выйти</button>
+    </form>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alerts" aria-live="polite">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% if participants %}
+    <div class="results-summary">Участников: <b>{{ participants|length }}</b></div>
+    <div class="participants-list">
+      {% for participant in participants %}
+        <details class="participant-folder" {% if loop.first %}open{% endif %}>
+          <summary class="participant-heading">
+            <div class="participant-avatar">{{ participant.fio[0]|upper }}</div>
+            <div class="participant-title">
+              <h3>{{ participant.fio }}</h3>
+              <p>{% if participant.submissions|length > 1 %}Заявок: {{ participant.submissions|length }}{% else %}Заполненная анкета{% endif %}</p>
+            </div>
+            <span class="folder-chevron" aria-hidden="true">⌄</span>
+          </summary>
+
+          <div class="participant-content">
+            {% for submission in participant.submissions %}
+              {% if participant.submissions|length > 1 %}
+                <h4 class="submission-number">Заявка {{ loop.index }}</h4>
+              {% endif %}
+
+              <section class="result-section">
+                <h4>Основная информация</h4>
+                <dl class="result-grid">
+                  <div class="result-item">
+                    <dt>Дата заявки</dt>
+                    <dd>{{ submission.get('Дата заявки') or '—' }}</dd>
+                  </div>
+                  {% for label, column, is_link in personal_fields %}
+                    <div class="result-item">
+                      <dt>{{ label }}</dt>
+                      <dd>
+                        {% if is_link and submission.get(column) %}
+                          <a href="{{ submission.get(column) }}" target="_blank" rel="noreferrer">{{ submission.get(column) }}</a>
+                        {% else %}
+                          {{ submission.get(column) or '—' }}
+                        {% endif %}
+                      </dd>
+                    </div>
+                  {% endfor %}
+                </dl>
+              </section>
+
+              <section class="result-section">
+                <h4>Достижения на Химическом факультете</h4>
+                <dl class="achievement-list">
+                  {% for label, column, is_link in achievement_fields %}
+                    <div class="result-item">
+                      <dt>{{ label }}</dt>
+                      <dd>
+                        {% if is_link and submission.get(column) %}
+                          <a href="{{ submission.get(column) }}" target="_blank" rel="noreferrer">{{ submission.get(column) }}</a>
+                        {% else %}
+                          {{ submission.get(column) or '—' }}
+                        {% endif %}
+                      </dd>
+                    </div>
+                  {% endfor %}
+                </dl>
+              </section>
+            {% endfor %}
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-results">
+      <div class="empty-icon" aria-hidden="true">○</div>
+      <h3>Пока нет результатов</h3>
+      <p>Когда участники отправят заявки, они появятся здесь.</p>
+    </div>
+  {% endif %}
+{% endblock %}
