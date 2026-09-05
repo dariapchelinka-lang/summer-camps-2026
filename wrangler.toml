@@ -1,10 +1,14 @@
 # wrangler.toml
-name = "summer-camps-api"
-main = "src/worker.js"
-compatibility_date = "2024-01-01"
+name = "summer-camps"
+main = "src/worker.py"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["python_workers"]
 
 [vars]
-GOOGLE_SHEET_ID = "ваш_id_таблицы"
+GOOGLE_SHEET_ID = "ваш_id"
 GOOGLE_WORKSHEET_NAME = "Лист1"
-SESSION_SECRET = "ваша_секретная_строка"
-ADMIN_PASSWORD = "ваш_пароль"
+SESSION_SECRET = "секрет"
+ADMIN_PASSWORD = "пароль"
+
+[env.production.vars]
+GOOGLE_SERVICE_ACCOUNT_JSON = "ваш_JSON_одной_строкой"
