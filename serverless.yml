@@ -1,0 +1,14 @@
+# serverless.yml
+service: summer-camps-2026
+
+provider:
+  name: python
+  runtime: python3.13
+
+functions:
+  app:
+    handler: app.app
+    events:
+      - http:
+          path: /
+          method: ANY
